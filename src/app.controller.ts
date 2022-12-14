@@ -1,13 +1,27 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body } from '@nestjs/common';
 import { AppService } from './app.service';
+import { AuthGuard } from './auth/AuthGuard';
+import { Jwt } from './auth/Jwt';
 
-@Controller()
+interface JwtPayload {
+  sub: string;
+  email: string;
+}
+
+@Controller('/')
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(private readonly appService: AppService, private jwt : Jwt) {}
 
-  @Get()
-  getHello(): string {
-    //test
-    return this.appService.getHello();
+  @Post()
+  @UseGuards(AuthGuard)
+  getHello(@Body() body): string {
+    return "";
   }
+
+  @Post('signin')
+  @UseGuards(AuthGuard)
+  getAccessToken(@Body() body): string {
+    return this.jwt.getAccessToken(body);
+  }
+
 }
